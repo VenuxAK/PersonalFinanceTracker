@@ -1,4 +1,4 @@
-# Koren Finance (ကိုရန်း ဘဏ္ဍာရေး) 💰🇲🇲
+# Personal Finance Tracker 💰
 
 An offline-first, bilingual personal finance and expense tracking Android application tailored for **Myanmar Kyat (MMK)**, built with modern **Jetpack Compose**, **Room Database**, **Firebase Cloud Firestore**, and **Jetpack DataStore**.
 
@@ -99,7 +99,7 @@ app/src/main/java/com/example/
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/your-username/koren-finance.git
+git clone https://github.com/VenuxAK/PersonalFinanceTracker.git
 cd koren-finance
 ```
 
