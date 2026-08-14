@@ -1,4 +1,4 @@
-# Balancea (ဗလန်စီယာ ဘဏ္ဍာရေး) 💰🇲🇲
+# Balancea - Personal Finance Tracker 💰
 
 An offline-first, bilingual personal finance and expense tracking Android application tailored for **Myanmar Kyat (MMK)**, built by **Venux Labs** with modern **Jetpack Compose**, **Room Database**, **Firebase Cloud Firestore**, and **Jetpack DataStore**.
 
@@ -102,7 +102,7 @@ app/src/main/java/com/venuxlabs/balancea/
 ### 2. Clone the Repository
 ```bash
 git clone https://github.com/VenuxAK/PersonalFinanceTracker.git
-cd balancea
+cd PersonalFinanceTracker
 ```
 
 ### 3. Firebase Setup (Optional for Cloud Sync)
