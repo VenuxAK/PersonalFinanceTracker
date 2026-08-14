@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Outer Glow / Shield Container -->
+    <path
+        android:pathData="M54,24 C68,24 80,31 80,45 C80,64 54,84 54,84 C54,84 28,64 28,45 C28,31 40,24 54,24 Z"
+        android:strokeWidth="2.5"
+        android:strokeColor="#00E599">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="28"
+                android:startY="24"
+                android:endX="80"
+                android:endY="84"
+                android:type="linear">
+                <item android:color="#1A00E599" android:offset="0.0" />
+                <item android:color="#0D00E599" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Upward Growth Arrow / Currency Line -->
+    <path
+        android:pathData="M38,56 L49,45 L58,54 L70,38"
+        android:strokeWidth="3.5"
+        android:strokeColor="#00E599"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Arrow head -->
+    <path
+        android:pathData="M63,38 L70,38 L70,45"
+        android:strokeWidth="3.5"
+        android:strokeColor="#00E599"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Center Currency Node -->
+    <path
+        android:pathData="M54,67 A4,4 0 1,1 54,59 A4,4 0 1,1 54,67 Z"
+        android:fillColor="#00E599" />
+</vector>
+

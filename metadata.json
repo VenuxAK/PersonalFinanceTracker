@@ -1,0 +1,6 @@
+{
+  "name": "Koren Finance",
+  "description": "Offline-first personal finance tracking app with Myanmar Kyat (MMK) currency formatting, Room persistence, custom canvas charts, budgets, and cloud sync.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
