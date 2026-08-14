@@ -1,6 +1,6 @@
-# Personal Finance Tracker 💰
+# Balancea (ဗလန်စီယာ ဘဏ္ဍာရေး) 💰🇲🇲
 
-An offline-first, bilingual personal finance and expense tracking Android application tailored for **Myanmar Kyat (MMK)**, built with modern **Jetpack Compose**, **Room Database**, **Firebase Cloud Firestore**, and **Jetpack DataStore**.
+An offline-first, bilingual personal finance and expense tracking Android application tailored for **Myanmar Kyat (MMK)**, built by **Venux Labs** with modern **Jetpack Compose**, **Room Database**, **Firebase Cloud Firestore**, and **Jetpack DataStore**.
 
 ---
 
@@ -22,8 +22,9 @@ An offline-first, bilingual personal finance and expense tracking Android applic
 - **🔄 Recurring Payments & Subscriptions**:
   - Track fixed commitments (Rent, Wi-Fi, Salary, Utilities) with customizable billing cycles (Daily, Weekly, Monthly, Yearly).
   - One-tap quick post to ledger when dues arrive.
-- **🎨 Modern Material 3 & Theme Support**:
-  - **Dark Obsidian Theme**, **Clean Light Theme**, and System Default.
+- **🎨 Modern Material 3 & High Contrast Theme Support**:
+  - **Dark Obsidian Theme**, **Clean Crisp Light Theme**, and System Default.
+  - Complete light mode readability and high contrast input controls.
   - Preferences persisted via **Jetpack DataStore**.
 
 ---
@@ -31,6 +32,7 @@ An offline-first, bilingual personal finance and expense tracking Android applic
 ## 🛠 Tech Stack & Architecture
 
 - **Language**: [Kotlin](https://kotlinlang.org/) (100%)
+- **Package**: `com.venuxlabs.balancea`
 - **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose) with Material Design 3 (M3)
 - **Architecture**: MVVM (Model-View-ViewModel) + Clean Architecture pattern with StateFlow & Coroutines
 - **Local Database**: [Room Database](https://developer.android.com/training/data-storage/room) + SQLite with KSP
@@ -43,7 +45,7 @@ An offline-first, bilingual personal finance and expense tracking Android applic
 ## 📂 Project Structure
 
 ```
-app/src/main/java/com/example/
+app/src/main/java/com/venuxlabs/balancea/
 ├── MainActivity.kt                      # Main Activity entry point & navigation host
 ├── data/
 │   ├── local/
@@ -68,10 +70,10 @@ app/src/main/java/com/example/
 │   └── Localization.kt                  # DataStore-backed English & Burmese state manager
 └── ui/
     ├── components/
+    │   ├── BalanceaBottomNav.kt         # Floating bottom navigation bar with central quick-add FAB
     │   ├── BudgetProgressBar.kt         # Visual budget tracker with status tints
     │   ├── CategoryIconHelper.kt        # Dynamic Material Symbols mapper & color parser
     │   ├── CustomCashFlowChart.kt       # Bezier curve cash flow canvas visualization
-    │   ├── KorenBottomNav.kt            # Bottom navigation bar with central quick-add FAB
     │   └── TransactionCard.kt           # Transaction item card with cloud sync status badges
     ├── screens/
     │   ├── analytics/AnalyticsScreen.kt # Charts, breakdowns, and spending limits
@@ -99,13 +101,13 @@ app/src/main/java/com/example/
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/VenuxAK/PersonalFinanceTracker.git
-cd koren-finance
+git clone https://github.com/venuxlabs/balancea.git
+cd balancea
 ```
 
 ### 3. Firebase Setup (Optional for Cloud Sync)
 1. Create a new project in the [Firebase Console](https://console.firebase.google.com/).
-2. Add an Android app with the package name configured in `app/build.gradle.kts` (e.g. `com.aistudio.korenfinance`).
+2. Add an Android app with the package name configured in `app/build.gradle.kts` (`com.venuxlabs.balancea`).
 3. Download `google-services.json` and place it in the `/app` directory.
 4. Enable **Cloud Firestore** in test or production mode with appropriate security rules.
 

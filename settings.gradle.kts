@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Koren Finance"
+rootProject.name = "Balancea"
 
 include(":app")

@@ -1,6 +1,6 @@
 {
-  "name": "Koren Finance",
-  "description": "Offline-first personal finance tracking app with Myanmar Kyat (MMK) currency formatting, Room persistence, custom canvas charts, budgets, and cloud sync.",
+  "name": "Balancea",
+  "description": "Balancea - Smart personal finance and expense tracking app tailored for Myanmar Kyat (MMK) with offline-first Room persistence, custom canvas charts, budgets, and cloud sync.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

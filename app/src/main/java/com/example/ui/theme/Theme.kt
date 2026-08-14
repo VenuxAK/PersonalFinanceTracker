@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.example.domain.AppThemeMode
 
-private val KorenDarkColorScheme = darkColorScheme(
+private val BalanceaDarkColorScheme = darkColorScheme(
     primary = ElectricEmeraldDark,
     onPrimary = ObsidianBg,
     primaryContainer = SlateCardElevated,
@@ -39,7 +39,7 @@ private val KorenDarkColorScheme = darkColorScheme(
     onError = Color.White
 )
 
-private val KorenLightColorScheme = lightColorScheme(
+private val BalanceaLightColorScheme = lightColorScheme(
     primary = ElectricEmerald,
     onPrimary = Color.White,
     primaryContainer = LightCardElevated,
@@ -87,7 +87,7 @@ val LocalExtraColors = staticCompositionLocalOf {
 }
 
 @Composable
-fun KorenFinanceTheme(
+fun BalanceaTheme(
     themeMode: AppThemeMode = AppThemeMode.DARK,
     content: @Composable () -> Unit
 ) {
@@ -97,7 +97,7 @@ fun KorenFinanceTheme(
         AppThemeMode.LIGHT -> false
     }
 
-    val colorScheme: ColorScheme = if (isDark) KorenDarkColorScheme else KorenLightColorScheme
+    val colorScheme: ColorScheme = if (isDark) BalanceaDarkColorScheme else BalanceaLightColorScheme
     val extraColors = if (isDark) {
         ExtraThemeColors(
             cardBackground = SlateCard,
@@ -145,12 +145,20 @@ fun KorenFinanceTheme(
 
 // Backward compatibility alias
 @Composable
+fun KorenFinanceTheme(
+    themeMode: AppThemeMode = AppThemeMode.DARK,
+    content: @Composable () -> Unit
+) {
+    BalanceaTheme(themeMode = themeMode, content = content)
+}
+
+@Composable
 fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    KorenFinanceTheme(
+    BalanceaTheme(
         themeMode = if (darkTheme) AppThemeMode.DARK else AppThemeMode.LIGHT,
         content = content
     )

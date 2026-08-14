@@ -13,17 +13,26 @@
                 android:endX="108"
                 android:endY="108"
                 android:type="linear">
-                <item android:color="#0F1115" android:offset="0.0" />
-                <item android:color="#1A202C" android:offset="0.6" />
-                <item android:color="#0B2E24" android:offset="1.0" />
+                <item android:color="#1A2D31" android:offset="0.0" />
+                <item android:color="#243E43" android:offset="0.5" />
+                <item android:color="#16272B" android:offset="1.0" />
             </gradient>
         </aapt:attr>
     </path>
-    <!-- Subtle geometric background grid -->
+    <!-- Subtle luxury glow around center -->
     <path
-        android:fillColor="#00000000"
-        android:strokeColor="#15263238"
-        android:strokeWidth="1"
-        android:pathData="M18,0L18,108 M36,0L36,108 M54,0L54,108 M72,0L72,108 M90,0L90,108 M0,18L108,18 M0,36L108,36 M0,54L108,54 M0,72L108,72 M0,90L108,90" />
+        android:pathData="M54,54m-30,0a30,30 0 1,1 60,0a30,30 0 1,1 -60,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="54"
+                android:startY="24"
+                android:endX="54"
+                android:endY="84"
+                android:type="radial"
+                android:gradientRadius="30">
+                <item android:color="#1A75B4A4" android:offset="0.0" />
+                <item android:color="#00243E43" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
 </vector>
-
