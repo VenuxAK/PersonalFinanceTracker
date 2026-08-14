@@ -13,7 +13,11 @@ data class FinancialSummary(
     val netSavings: Long,
     val savingsRate: Float, // 0 - 100%
     val pendingSyncCount: Int
-)
+) {
+    val netBalance: Long get() = totalBalance
+    val totalIncome: Long get() = monthlyIncome
+    val totalExpense: Long get() = monthlyExpense
+}
 
 data class CategoryExpenseBreakdown(
     val categoryId: String,
@@ -22,7 +26,10 @@ data class CategoryExpenseBreakdown(
     val categoryIcon: String,
     val totalAmount: Long,
     val percentage: Float
-)
+) {
+    val colorHex: String get() = categoryColor
+    val iconKey: String get() = categoryIcon
+}
 
 data class CashflowDataPoint(
     val label: String, // e.g. "Aug 10" or "Mon"

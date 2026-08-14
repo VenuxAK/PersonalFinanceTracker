@@ -57,7 +57,8 @@ import kotlin.math.sqrt
 fun CustomDonutChart(
     breakdowns: List<CategoryExpenseBreakdown>,
     modifier: Modifier = Modifier,
-    totalExpense: Long = breakdowns.sumOf { it.totalAmount }
+    totalExpense: Long = breakdowns.sumOf { it.totalAmount },
+    showLegend: Boolean = false
 ) {
     val loc = LocalAppLocalization.current
     val extraColors = LocalExtraColors.current
@@ -66,9 +67,7 @@ fun CustomDonutChart(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .height(220.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(extraColors.cardBackground),
+                .height(180.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -80,7 +79,7 @@ fun CustomDonutChart(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = loc.t("Add expenses to see category breakdown", "အမျိုးအစားအလိုက် ခွဲခြမ်းကြည့်ရှုရန် အသုံးစရိတ်ထည့်ပါ"),
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelSmall,
                     color = extraColors.textSecondary
                 )
             }
@@ -95,21 +94,17 @@ fun CustomDonutChart(
         animationProgress.snapTo(0f)
         animationProgress.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 900, easing = FastOutSlowInEasing)
+            animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing)
         )
     }
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
-            .background(extraColors.cardBackground)
-            .padding(20.dp),
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Donut Canvas with Center Text
         Box(
-            modifier = Modifier.size(230.dp),
+            modifier = Modifier.size(210.dp),
             contentAlignment = Alignment.Center
         ) {
             Canvas(
@@ -122,7 +117,7 @@ fun CustomDonutChart(
                             val dy = tapOffset.y - center.y
                             val dist = sqrt(dx * dx + dy * dy)
                             val outerRadius = size.width / 2f
-                            val innerRadius = outerRadius - 40f
+                            val innerRadius = outerRadius - 32.dp.toPx()
 
                             if (dist in innerRadius..outerRadius) {
                                 var angle = Math.toDegrees(atan2(dy.toDouble(), dx.toDouble())).toFloat()
@@ -146,7 +141,7 @@ fun CustomDonutChart(
                         }
                     }
             ) {
-                val strokeWidth = 28.dp.toPx()
+                val strokeWidth = 22.dp.toPx()
                 val radius = (size.minDimension - strokeWidth) / 2f
                 val center = Offset(size.width / 2f, size.height / 2f)
                 val topLeft = Offset(center.x - radius, center.y - radius)
@@ -154,7 +149,7 @@ fun CustomDonutChart(
 
                 // Background track
                 drawArc(
-                    color = if (extraColors.isDark) Color(0xFF131720) else Color(0xFFE2E8F0),
+                    color = if (extraColors.isDark) Color(0xFF161A24) else Color(0xFFE2E8F0),
                     startAngle = 0f,
                     sweepAngle = 360f,
                     useCenter = false,
@@ -172,7 +167,7 @@ fun CustomDonutChart(
                     val sweep = (rawSweep - gap).coerceAtLeast(1f) * animationProgress.value
 
                     val isSelected = selectedIndex == index
-                    val currentStroke = if (isSelected) strokeWidth + 6.dp.toPx() else strokeWidth
+                    val currentStroke = if (isSelected) strokeWidth + 4.dp.toPx() else strokeWidth
 
                     drawArc(
                         color = color,
@@ -194,14 +189,20 @@ fun CustomDonutChart(
             // Center metric display
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(horizontal = 24.dp)
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .size(140.dp)
+                    .padding(horizontal = 8.dp)
             ) {
                 if (selectedIndex != null && selectedIndex!! < breakdowns.size) {
                     val sel = breakdowns[selectedIndex!!]
                     val localizedCat = CategoryLocalization.getLocalizedCategoryName(sel.categoryName, loc.isBurmese())
                     Text(
                         text = localizedCat.uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.SemiBold
+                        ),
                         color = extraColors.textMuted,
                         textAlign = TextAlign.Center,
                         maxLines = 1,
@@ -210,88 +211,105 @@ fun CustomDonutChart(
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = CurrencyFormatter.formatMMKCompact(sel.totalAmount),
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
                         color = extraColors.textPrimary,
-                        fontWeight = FontWeight.Bold
+                        maxLines = 1
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "${sel.percentage.toInt()}%",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = CategoryIconHelper.parseColor(sel.categoryColor),
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = CategoryIconHelper.parseColor(sel.categoryColor)
                     )
                 } else {
                     Text(
                         text = loc.t("TOTAL SPENT", "စုစုပေါင်းအသုံး"),
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.5.sp
+                        ),
                         color = extraColors.textMuted,
-                        letterSpacing = 1.sp,
-                        fontWeight = FontWeight.Bold
+                        textAlign = TextAlign.Center,
+                        maxLines = 1
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = CurrencyFormatter.formatMMKCompact(totalExpense),
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
                         color = extraColors.textPrimary,
-                        fontWeight = FontWeight.Bold
+                        maxLines = 1
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = loc.t("${breakdowns.size} Categories", "အမျိုးအစား ${breakdowns.size} ခု"),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = extraColors.textSecondary
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                        color = extraColors.textSecondary,
+                        maxLines = 1
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        if (showLegend) {
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Category Legend Chips
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            breakdowns.forEachIndexed { index, item ->
-                val isSelected = selectedIndex == index
-                val itemColor = CategoryIconHelper.parseColor(item.categoryColor)
-                val localizedCat = CategoryLocalization.getLocalizedCategoryName(item.categoryName, loc.isBurmese())
+            // Category Legend Chips
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                breakdowns.forEachIndexed { index, item ->
+                    val isSelected = selectedIndex == index
+                    val itemColor = CategoryIconHelper.parseColor(item.categoryColor)
+                    val localizedCat = CategoryLocalization.getLocalizedCategoryName(item.categoryName, loc.isBurmese())
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(if (isSelected) extraColors.cardElevated else if (extraColors.isDark) Color(0xFF161922) else Color(0xFFF1F5F9))
-                        .border(
-                            1.dp,
-                            if (isSelected) itemColor else extraColors.border,
-                            RoundedCornerShape(12.dp)
-                        )
-                        .clickable {
-                            selectedIndex = if (selectedIndex == index) null else index
-                        }
-                        .padding(horizontal = 10.dp, vertical = 6.dp)
-                ) {
-                    Box(
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .size(8.dp)
-                            .clip(CircleShape)
-                            .background(itemColor)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = localizedCat,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = extraColors.textPrimary,
-                        maxLines = 1
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "${item.percentage.toInt()}%",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = extraColors.textSecondary,
-                        fontWeight = FontWeight.Bold
-                    )
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(if (isSelected) extraColors.cardElevated else if (extraColors.isDark) Color(0xFF161922) else Color(0xFFF1F5F9))
+                            .border(
+                                1.dp,
+                                if (isSelected) itemColor else extraColors.border,
+                                RoundedCornerShape(12.dp)
+                            )
+                            .clickable {
+                                selectedIndex = if (selectedIndex == index) null else index
+                            }
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(itemColor)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = localizedCat,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = extraColors.textPrimary,
+                            maxLines = 1
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "${item.percentage.toInt()}%",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = extraColors.textSecondary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }

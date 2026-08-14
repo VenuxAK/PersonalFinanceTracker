@@ -29,6 +29,10 @@ object CurrencyFormatter {
         return if (includeSymbol) "$sign$formattedNumber Ks" else "$sign$formattedNumber"
     }
 
+    fun formatMMK(amount: Long, isBurmese: Boolean): String {
+        return formatMMK(amount, includeSymbol = true)
+    }
+
     /**
      * Formats amount with ISO code: e.g. "MMK 1,500,000"
      */
@@ -56,6 +60,10 @@ object CurrencyFormatter {
             }
             else -> "$absVal Ks"
         }
+    }
+
+    fun formatCompactMMK(amount: Long, isBurmese: Boolean = false): String {
+        return formatMMKCompact(amount)
     }
 
     /**

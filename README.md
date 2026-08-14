@@ -101,7 +101,7 @@ app/src/main/java/com/venuxlabs/balancea/
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/venuxlabs/balancea.git
+git clone https://github.com/VenuxAK/PersonalFinanceTracker.git
 cd balancea
 ```
 

@@ -46,6 +46,13 @@ object CategoryIconHelper {
         }
     }
 
+    val availableIcons = listOf(
+        "restaurant", "shopping_bag", "directions_car", "home",
+        "bolt", "movie", "medical_services", "school",
+        "flight", "spa", "payments", "laptop_mac",
+        "trending_up", "storefront", "redeem", "work", "account_balance"
+    )
+
     fun parseColor(colorHex: String, fallback: Color = Color(0xFF64748B)): Color {
         return try {
             val cleanHex = if (colorHex.startsWith("#")) colorHex.substring(1) else colorHex
