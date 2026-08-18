@@ -23,15 +23,24 @@ import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.SettingsBrightness
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +59,7 @@ import com.example.domain.LocalAppLocalization
 import com.example.ui.theme.ElectricEmerald
 import com.example.ui.theme.LocalExtraColors
 import com.example.ui.theme.NeonViolet
+import com.example.ui.theme.VividCoral
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,10 +69,13 @@ fun SettingsScreen(
     syncState: SyncState,
     onSyncClick: () -> Unit,
     onNavigateCategories: () -> Unit,
+    onNavigateWallets: () -> Unit = {},
+    onResetData: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val loc = LocalAppLocalization.current
     val extraColors = LocalExtraColors.current
+    var showResetDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = modifier
@@ -162,6 +175,54 @@ fun SettingsScreen(
                         isSelected = loc.currentThemeMode == AppThemeMode.SYSTEM,
                         onClick = { loc.setThemeMode(AppThemeMode.SYSTEM) },
                         modifier = Modifier.weight(1f).testTag("btn_theme_system")
+                    )
+                }
+            }
+        }
+
+        // Section: Wallets & Banking Accounts
+        item {
+            SettingsCard(onClick = onNavigateWallets) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MonetizationOn,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = loc.t("Wallets & Bank Accounts", "ပိုက်ဆံအိတ်နှင့် ဘဏ်များ စီမံရန်"),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = extraColors.textPrimary
+                            )
+                            Text(
+                                text = loc.t("KBZPay, CB Pay, Banks & Cash balances", "KBZPay, CB Pay, ဘဏ်များနှင့် လက်ငင်းငွေ စာရင်းများ"),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = extraColors.textSecondary
+                            )
+                        }
+                    }
+
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = extraColors.textSecondary
                     )
                 }
             }
@@ -328,6 +389,54 @@ fun SettingsScreen(
             }
         }
 
+        // Section: Reset Data / Danger Zone
+        item {
+            SettingsCard(onClick = { showResetDialog = true }) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(VividCoral.copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DeleteSweep,
+                                contentDescription = null,
+                                tint = VividCoral,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = loc.t("Reset All Data", "ဒေတာ အားလုံး ရှင်းလင်းရန်"),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = VividCoral
+                            )
+                            Text(
+                                text = loc.t("Clear all records and restore defaults", "စာရင်းမှတ်တမ်းများကို ဖျက်ပြီး မူလအတိုင်း ပြန်ထားမည်"),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = extraColors.textSecondary
+                            )
+                        }
+                    }
+
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = VividCoral
+                    )
+                }
+            }
+        }
+
         // Section: About Balancea
         item {
             Box(
@@ -363,6 +472,45 @@ fun SettingsScreen(
                 }
             }
         }
+    }
+
+    if (showResetDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetDialog = false },
+            containerColor = extraColors.cardBackground,
+            title = {
+                Text(
+                    text = loc.t("Reset All Data?", "ဒေတာ အားလုံး ရှင်းလင်းမည်လား?"),
+                    fontWeight = FontWeight.Bold,
+                    color = VividCoral
+                )
+            },
+            text = {
+                Text(
+                    text = loc.t(
+                        "Are you sure you want to reset all data? This will permanently delete all transaction records, reset budgets, and restore default Myanmar wallets. This action cannot be undone.",
+                        "ဒေတာ အားလုံးကို မူလအတိုင်း ပြန်လည်သတ်မှတ်ရန် သေချာပါသလား? သင်မှတ်သားထားသော စာရင်းမှတ်တမ်းများ အားလုံး ပျက်ပြယ်သွားမည်ဖြစ်ပြီး ပိုက်ဆံအိတ်များနှင့် ဘတ်ဂျက်များကို မူလအနေအထားသို့ ပြန်လည်ထားရှိပါမည်။"
+                    ),
+                    color = extraColors.textPrimary
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showResetDialog = false
+                        onResetData()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = VividCoral)
+                ) {
+                    Text(loc.t("Reset Everything", "အားလုံး ရှင်းလင်းမည်"), color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetDialog = false }) {
+                    Text(loc.t("Cancel", "ပယ်ဖျက်"), color = extraColors.textSecondary)
+                }
+            }
+        )
     }
 }
 

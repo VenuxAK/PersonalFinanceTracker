@@ -31,7 +31,8 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
     val financeRepository = FinanceRepository(
         transactionDao = database.transactionDao(),
         budgetDao = database.budgetDao(),
-        categoryDao = database.categoryDao()
+        categoryDao = database.categoryDao(),
+        walletDao = database.walletDao()
     )
     val syncRepository = SyncRepository(
         transactionDao = database.transactionDao(),
@@ -47,6 +48,20 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
         )
 
     val recentTransactions: StateFlow<List<TransactionEntity>> = financeRepository.getRecentTransactions(8)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val allWallets: StateFlow<List<com.example.data.local.entity.WalletEntity>> = financeRepository.allWallets
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val walletsWithBalance: StateFlow<List<com.example.data.model.WalletWithBalance>> = financeRepository.getWalletsWithBalance()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -113,7 +128,11 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
         isRecurring: Boolean = false,
         frequency: String = "NONE",
         nextDueDate: Long = 0L,
-        autoApply: Boolean = false
+        autoApply: Boolean = false,
+        walletId: String? = null,
+        walletName: String? = null,
+        toWalletId: String? = null,
+        toWalletName: String? = null
     ) {
         viewModelScope.launch {
             financeRepository.addTransaction(
@@ -129,8 +148,81 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
                 isRecurring = isRecurring,
                 frequency = frequency,
                 nextDueDate = nextDueDate,
-                autoApply = autoApply
+                autoApply = autoApply,
+                walletId = walletId,
+                walletName = walletName,
+                toWalletId = toWalletId,
+                toWalletName = toWalletName
             )
+        }
+    }
+
+    fun transferFunds(
+        fromWalletId: String,
+        fromWalletName: String,
+        toWalletId: String,
+        toWalletName: String,
+        amount: Long,
+        note: String = "",
+        timestamp: Long = System.currentTimeMillis()
+    ) {
+        viewModelScope.launch {
+            financeRepository.transferBetweenWallets(
+                fromWalletId = fromWalletId,
+                fromWalletName = fromWalletName,
+                toWalletId = toWalletId,
+                toWalletName = toWalletName,
+                amount = amount,
+                note = note,
+                timestamp = timestamp
+            )
+        }
+    }
+
+    fun addWallet(
+        name: String,
+        type: String,
+        initialBalance: Long = 0L,
+        colorHex: String = "#0066B2",
+        iconKey: String = "phone_iphone",
+        accountNumber: String = "",
+        isDefault: Boolean = false
+    ) {
+        viewModelScope.launch {
+            financeRepository.addWallet(
+                name = name,
+                type = type,
+                initialBalance = initialBalance,
+                colorHex = colorHex,
+                iconKey = iconKey,
+                accountNumber = accountNumber,
+                isDefault = isDefault
+            )
+        }
+    }
+
+    fun updateWallet(wallet: com.example.data.local.entity.WalletEntity) {
+        viewModelScope.launch {
+            financeRepository.updateWallet(wallet)
+        }
+    }
+
+    fun deleteWallet(id: String) {
+        viewModelScope.launch {
+            financeRepository.deleteWallet(id)
+        }
+    }
+
+    fun adjustWalletBalance(walletId: String, newBalance: Long) {
+        viewModelScope.launch {
+            financeRepository.adjustWalletBalance(walletId, newBalance)
+        }
+    }
+
+    fun resetAllData(onComplete: (() -> Unit)? = null) {
+        viewModelScope.launch {
+            financeRepository.resetAllData()
+            onComplete?.invoke()
         }
     }
 

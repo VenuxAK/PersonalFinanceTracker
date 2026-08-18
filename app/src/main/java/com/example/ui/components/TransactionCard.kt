@@ -123,6 +123,15 @@ fun TransactionCard(
                         style = MaterialTheme.typography.labelSmall,
                         color = extraColors.textMuted
                     )
+                    if (!transaction.walletName.isNullOrBlank()) {
+                        Text(
+                            text = " • ${transaction.walletName}",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
         }

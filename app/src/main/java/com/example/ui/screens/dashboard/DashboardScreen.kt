@@ -16,11 +16,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudQueue
@@ -30,6 +34,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +54,7 @@ import com.example.R
 import com.example.data.local.entity.TransactionEntity
 import com.example.data.model.BudgetWithSpending
 import com.example.data.model.SyncState
+import com.example.data.model.WalletWithBalance
 import com.example.domain.CashflowDataPoint
 import com.example.domain.CurrencyFormatter
 import com.example.domain.FinancialSummary
@@ -56,6 +62,7 @@ import com.example.domain.LocalAppLocalization
 import com.example.ui.components.BudgetProgressBar
 import com.example.ui.components.CustomCashFlowChart
 import com.example.ui.components.TransactionCard
+import com.example.ui.components.WalletCard
 import com.example.ui.theme.ElectricEmerald
 import com.example.ui.theme.LocalExtraColors
 import com.example.ui.theme.NeonViolet
@@ -70,10 +77,13 @@ fun DashboardScreen(
     cashflowPoints: List<CashflowDataPoint>,
     recentTransactions: List<TransactionEntity>,
     budgets: List<BudgetWithSpending>,
+    wallets: List<WalletWithBalance>,
     syncState: SyncState,
     onSyncClick: () -> Unit,
     onTransactionClick: (TransactionEntity) -> Unit,
     onSeeAllTransactions: () -> Unit,
+    onManageWallets: () -> Unit,
+    onWalletClick: (WalletWithBalance) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val loc = LocalAppLocalization.current
@@ -324,6 +334,91 @@ fun DashboardScreen(
                                         color = VividCoral
                                     )
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Wallets & Accounts Section (KBZPay, CB Pay, Cash, Banks)
+        item {
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = loc.t("My Wallets & Accounts", "ပိုက်ဆံအိတ်နှင့် ဘဏ်များ"),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = extraColors.textPrimary
+                    )
+
+                    TextButton(
+                        onClick = onManageWallets,
+                        modifier = Modifier.testTag("btn_manage_wallets")
+                    ) {
+                        Text(
+                            text = loc.t("Manage All", "စီမံရန်"),
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(vertical = 4.dp)
+                ) {
+                    items(wallets, key = { it.id }) { wallet ->
+                        WalletCard(
+                            wallet = wallet,
+                            onClick = { onWalletClick(wallet) }
+                        )
+                    }
+
+                    // Add / Manage Wallet Action Card
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .width(130.dp)
+                                .height(120.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(extraColors.cardElevated)
+                                .border(1.dp, extraColors.border, RoundedCornerShape(20.dp))
+                                .clickable { onManageWallets() }
+                                .padding(12.dp)
+                                .testTag("btn_add_wallet_card"),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Add Wallet",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = loc.t("+ Add Account", "+ အကောင့်ထည့်"),
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                             }
                         }
                     }

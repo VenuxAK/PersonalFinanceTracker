@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -310,29 +311,41 @@ fun AnalyticsScreen(
                         color = extraColors.textSecondary
                     )
 
-                    // Category chips
-                    Row(
+                    // Category chips with smooth horizontal scrolling
+                    LazyRow(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
-                        expenseCategories.take(4).forEach { cat ->
+                        items(expenseCategories) { cat ->
                             val isSel = cat.id == selectedBudgetCategory?.id
                             val catColor = CategoryIconHelper.parseColor(cat.colorHex)
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(10.dp))
                                     .background(if (isSel) catColor.copy(alpha = 0.2f) else extraColors.cardElevated)
-                                    .border(1.dp, if (isSel) catColor else extraColors.border, RoundedCornerShape(8.dp))
+                                    .border(1.dp, if (isSel) catColor else extraColors.border, RoundedCornerShape(10.dp))
                                     .clickable { selectedBudgetCategory = cat }
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                                    .padding(horizontal = 10.dp, vertical = 6.dp)
                             ) {
-                                Text(
-                                    text = CategoryLocalization.getLocalizedCategoryName(cat.name, loc.isBurmese()),
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal
-                                    ),
-                                    color = if (isSel) extraColors.textPrimary else extraColors.textSecondary
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = CategoryIconHelper.getIcon(cat.iconKey),
+                                        contentDescription = null,
+                                        tint = if (isSel) catColor else extraColors.textSecondary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = CategoryLocalization.getLocalizedCategoryName(cat.name, loc.isBurmese()),
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal
+                                        ),
+                                        color = if (isSel) catColor else extraColors.textPrimary,
+                                        maxLines = 1,
+                                        softWrap = false
+                                    )
+                                }
                             }
                         }
                     }

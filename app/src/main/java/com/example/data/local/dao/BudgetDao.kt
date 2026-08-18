@@ -28,6 +28,9 @@ interface BudgetDao {
     @Query("DELETE FROM budgets WHERE categoryId = :categoryId")
     suspend fun deleteBudget(categoryId: String)
 
+    @Query("DELETE FROM budgets")
+    suspend fun deleteAllBudgets()
+
     @Query("UPDATE budgets SET syncStatus = 'SYNCED', isDirty = 0 WHERE categoryId IN (:categoryIds)")
     suspend fun markAsSynced(categoryIds: List<String>)
 }

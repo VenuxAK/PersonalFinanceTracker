@@ -54,3 +54,36 @@ data class BudgetWithSpending(
     val percentage: Float,
     val status: BudgetStatus
 )
+
+enum class WalletType(val titleEn: String, val titleMm: String, val defaultIcon: String) {
+    MOBILE_WALLET("Mobile Wallet", "မိုဘိုင်းပိုက်ဆံအိတ်", "phone_iphone"),
+    BANK_ACCOUNT("Bank Account", "ဘဏ်အကောင့်", "account_balance"),
+    CASH("Cash", "လက်ငင်းငွေ", "payments"),
+    OTHER("Other", "အခြား", "account_balance_wallet")
+}
+
+data class WalletWithBalance(
+    val id: String,
+    val name: String,
+    val type: String,
+    val initialBalance: Long,
+    val currentBalance: Long,
+    val colorHex: String,
+    val iconKey: String,
+    val accountNumber: String = "",
+    val isDefault: Boolean = false,
+    val totalIncome: Long = 0L,
+    val totalExpense: Long = 0L,
+    val transactionCount: Int = 0
+)
+
+data class WalletPreset(
+    val id: String,
+    val name: String,
+    val type: String,
+    val colorHex: String,
+    val iconKey: String,
+    val nameMm: String? = null,
+    val defaultAccountNumber: String = ""
+)
+

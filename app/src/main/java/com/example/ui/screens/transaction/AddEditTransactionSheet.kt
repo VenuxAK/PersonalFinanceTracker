@@ -61,11 +61,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.local.entity.CategoryEntity
 import com.example.data.local.entity.TransactionEntity
+import com.example.data.local.entity.WalletEntity
 import com.example.data.model.RecurrenceFrequency
 import com.example.domain.CategoryLocalization
 import com.example.domain.CurrencyFormatter
 import com.example.domain.LocalAppLocalization
 import com.example.ui.components.CategoryIconHelper
+import com.example.ui.components.getWalletIcon
 import com.example.ui.theme.ElectricEmerald
 import com.example.ui.theme.LocalExtraColors
 import com.example.ui.theme.VividCoral
@@ -78,6 +80,7 @@ import java.util.Locale
 fun AddEditTransactionSheet(
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     categories: List<CategoryEntity>,
+    wallets: List<WalletEntity> = emptyList(),
     editingTransaction: TransactionEntity? = null,
     onDismiss: () -> Unit,
     onSave: (
@@ -93,7 +96,9 @@ fun AddEditTransactionSheet(
         isRecurring: Boolean,
         frequency: String,
         nextDueDate: Long,
-        autoApply: Boolean
+        autoApply: Boolean,
+        walletId: String?,
+        walletName: String?
     ) -> Unit,
     onUpdate: ((TransactionEntity) -> Unit)? = null,
     onDelete: ((String) -> Unit)? = null
@@ -113,6 +118,12 @@ fun AddEditTransactionSheet(
         )
     }
 
+    var selectedWalletId by remember {
+        mutableStateOf(
+            editingTransaction?.walletId ?: wallets.firstOrNull { it.isDefault }?.id ?: wallets.firstOrNull()?.id
+        )
+    }
+
     var isRecurring by remember { mutableStateOf(editingTransaction?.isRecurring ?: false) }
     var frequency by remember { mutableStateOf(editingTransaction?.frequency ?: RecurrenceFrequency.MONTHLY.name) }
     var autoApply by remember { mutableStateOf(editingTransaction?.autoApply ?: false) }
@@ -120,6 +131,8 @@ fun AddEditTransactionSheet(
     val selectedCategory = categories.find { it.id == selectedCategoryId }
         ?: filteredCategories.firstOrNull()
         ?: categories.firstOrNull()
+
+    val selectedWallet = wallets.find { it.id == selectedWalletId }
 
     val isIncome = selectedType == "INCOME"
     val accentColor = if (isIncome) ElectricEmerald else VividCoral
@@ -347,6 +360,66 @@ fun AddEditTransactionSheet(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Wallet / Payment Method Selection Chips
+            if (wallets.isNotEmpty()) {
+                Text(
+                    text = loc.t("Wallet / Payment Method", "ငွေပေးချေမှု / ပိုက်ဆံအိတ်"),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = extraColors.textSecondary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    wallets.forEach { wallet ->
+                        val isSelected = wallet.id == selectedWalletId
+                        val walletColor = CategoryIconHelper.parseColor(wallet.colorHex)
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(if (isSelected) walletColor.copy(alpha = 0.2f) else extraColors.cardElevated)
+                                .border(
+                                    width = if (isSelected) 1.5.dp else 1.dp,
+                                    color = if (isSelected) walletColor else extraColors.border,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .clickable { selectedWalletId = wallet.id }
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                                .testTag("chip_wallet_${wallet.id}"),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                                    .background(walletColor.copy(alpha = 0.2f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = getWalletIcon(wallet.iconKey, wallet.type),
+                                    contentDescription = null,
+                                    tint = walletColor,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = wallet.name,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                ),
+                                color = if (isSelected) extraColors.textPrimary else extraColors.textSecondary
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
             // Category Selection Chips
             Text(
                 text = loc.t("Category", "အမျိုးအစား"),
@@ -547,7 +620,9 @@ fun AddEditTransactionSheet(
                                     note = noteInput,
                                     isRecurring = isRecurring,
                                     frequency = frequency,
-                                    autoApply = autoApply
+                                    autoApply = autoApply,
+                                    walletId = selectedWallet?.id,
+                                    walletName = selectedWallet?.name
                                 )
                             )
                         } else {
@@ -564,7 +639,9 @@ fun AddEditTransactionSheet(
                                 isRecurring,
                                 frequency,
                                 System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000),
-                                autoApply
+                                autoApply,
+                                selectedWallet?.id,
+                                selectedWallet?.name
                             )
                         }
                         onDismiss()

@@ -102,14 +102,16 @@ fun BalanceaBottomNav(
             NavItem(
                 screen = NavScreen.DASHBOARD,
                 isSelected = currentScreen == NavScreen.DASHBOARD,
-                onClick = { onScreenSelected(NavScreen.DASHBOARD) }
+                onClick = { onScreenSelected(NavScreen.DASHBOARD) },
+                modifier = Modifier.weight(1f)
             )
 
             // Screen 1: Analytics
             NavItem(
                 screen = NavScreen.ANALYTICS,
                 isSelected = currentScreen == NavScreen.ANALYTICS,
-                onClick = { onScreenSelected(NavScreen.ANALYTICS) }
+                onClick = { onScreenSelected(NavScreen.ANALYTICS) },
+                modifier = Modifier.weight(1f)
             )
 
             // Center Quick Add FAB
@@ -143,14 +145,16 @@ fun BalanceaBottomNav(
             NavItem(
                 screen = NavScreen.RECURRING,
                 isSelected = currentScreen == NavScreen.RECURRING,
-                onClick = { onScreenSelected(NavScreen.RECURRING) }
+                onClick = { onScreenSelected(NavScreen.RECURRING) },
+                modifier = Modifier.weight(1f)
             )
 
             // Screen 3: Settings
             NavItem(
                 screen = NavScreen.SETTINGS,
                 isSelected = currentScreen == NavScreen.SETTINGS,
-                onClick = { onScreenSelected(NavScreen.SETTINGS) }
+                onClick = { onScreenSelected(NavScreen.SETTINGS) },
+                modifier = Modifier.weight(1f)
             )
         }
     }
@@ -191,17 +195,17 @@ private fun NavItem(
             .clip(RoundedCornerShape(16.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null,
+                indication = androidx.compose.material3.ripple(bounded = true, radius = 28.dp),
                 onClick = onClick
             )
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = 4.dp, vertical = 6.dp)
             .testTag(screen.testTag)
     ) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
                 .background(if (isSelected) primaryColor.copy(alpha = 0.15f) else Color.Transparent)
-                .padding(horizontal = 10.dp, vertical = 4.dp),
+                .padding(horizontal = 8.dp, vertical = 4.dp),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -217,10 +221,13 @@ private fun NavItem(
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 10.sp,
+                fontSize = 9.5.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
             ),
-            color = if (isSelected) primaryColor else extraColors.textMuted
+            color = if (isSelected) primaryColor else extraColors.textMuted,
+            maxLines = 1,
+            softWrap = false,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
         )
     }
 }

@@ -8,22 +8,25 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.data.local.dao.BudgetDao
 import com.example.data.local.dao.CategoryDao
 import com.example.data.local.dao.TransactionDao
+import com.example.data.local.dao.WalletDao
 import com.example.data.local.entity.BudgetEntity
 import com.example.data.local.entity.CategoryEntity
 import com.example.data.local.entity.TransactionEntity
+import com.example.data.local.entity.WalletEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [TransactionEntity::class, BudgetEntity::class, CategoryEntity::class],
-    version = 1,
+    entities = [TransactionEntity::class, BudgetEntity::class, CategoryEntity::class, WalletEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
     abstract fun budgetDao(): BudgetDao
     abstract fun categoryDao(): CategoryDao
+    abstract fun walletDao(): WalletDao
 
     companion object {
         @Volatile
@@ -43,6 +46,109 @@ abstract class AppDatabase : RoomDatabase() {
                 instance
             }
         }
+
+        val DEFAULT_WALLETS = listOf(
+            WalletEntity(
+                id = "wallet_kbzpay",
+                name = "KBZPay",
+                type = "MOBILE_WALLET",
+                initialBalance = 750000L,
+                colorHex = "#0066B2",
+                iconKey = "phone_iphone",
+                accountNumber = "09450012345",
+                isDefault = true
+            ),
+            WalletEntity(
+                id = "wallet_cash",
+                name = "Cash (လက်ငင်းငွေ)",
+                type = "CASH",
+                initialBalance = 350000L,
+                colorHex = "#10B981",
+                iconKey = "payments",
+                accountNumber = "",
+                isDefault = false
+            ),
+            WalletEntity(
+                id = "wallet_cbpay",
+                name = "CB Pay",
+                type = "MOBILE_WALLET",
+                initialBalance = 300000L,
+                colorHex = "#E65100",
+                iconKey = "phone_iphone",
+                accountNumber = "09250067890",
+                isDefault = false
+            ),
+            WalletEntity(
+                id = "wallet_ayapay",
+                name = "AYA Pay",
+                type = "MOBILE_WALLET",
+                initialBalance = 200000L,
+                colorHex = "#D32F2F",
+                iconKey = "phone_iphone",
+                accountNumber = "09790011223",
+                isDefault = false
+            ),
+            WalletEntity(
+                id = "wallet_uabpay",
+                name = "UABpay (SaiSai)",
+                type = "MOBILE_WALLET",
+                initialBalance = 150000L,
+                colorHex = "#6A1B9A",
+                iconKey = "phone_iphone",
+                accountNumber = "09960033445",
+                isDefault = false
+            ),
+            WalletEntity(
+                id = "wallet_yomapay",
+                name = "YOMA Next / Pay",
+                type = "MOBILE_WALLET",
+                initialBalance = 180000L,
+                colorHex = "#F57C00",
+                iconKey = "phone_iphone",
+                accountNumber = "09310055667",
+                isDefault = false
+            ),
+            WalletEntity(
+                id = "wallet_wavepay",
+                name = "Wave Money",
+                type = "MOBILE_WALLET",
+                initialBalance = 120000L,
+                colorHex = "#FBBF24",
+                iconKey = "phone_iphone",
+                accountNumber = "09770088990",
+                isDefault = false
+            ),
+            WalletEntity(
+                id = "wallet_kbzbank",
+                name = "KBZ Bank",
+                type = "BANK_ACCOUNT",
+                initialBalance = 1200000L,
+                colorHex = "#004C97",
+                iconKey = "account_balance",
+                accountNumber = "•••• 8912",
+                isDefault = false
+            ),
+            WalletEntity(
+                id = "wallet_cbbank",
+                name = "CB Bank",
+                type = "BANK_ACCOUNT",
+                initialBalance = 500000L,
+                colorHex = "#005BAA",
+                iconKey = "account_balance",
+                accountNumber = "•••• 4421",
+                isDefault = false
+            ),
+            WalletEntity(
+                id = "wallet_ayabank",
+                name = "AYA Bank",
+                type = "BANK_ACCOUNT",
+                initialBalance = 400000L,
+                colorHex = "#C62828",
+                iconKey = "account_balance",
+                accountNumber = "•••• 3190",
+                isDefault = false
+            )
+        )
 
         val DEFAULT_CATEGORIES = listOf(
             // Expense Categories
@@ -93,12 +199,15 @@ abstract class AppDatabase : RoomDatabase() {
                     scope.launch {
                         if (database.categoryDao().getCategoryCount() == 0) {
                             populateDatabase(database)
+                        } else if (database.walletDao().getWalletCount() == 0) {
+                            database.walletDao().insertWallets(DEFAULT_WALLETS)
                         }
                     }
                 }
             }
 
             suspend fun populateDatabase(database: AppDatabase) {
+                database.walletDao().insertWallets(DEFAULT_WALLETS)
                 database.categoryDao().insertCategories(DEFAULT_CATEGORIES)
                 database.budgetDao().insertOrUpdateBudgets(DEFAULT_BUDGETS)
                 
@@ -122,7 +231,9 @@ abstract class AppDatabase : RoomDatabase() {
                         nextDueDate = now + (oneDay * 24),
                         autoApply = true,
                         syncStatus = "SYNCED",
-                        isDirty = false
+                        isDirty = false,
+                        walletId = "wallet_kbzbank",
+                        walletName = "KBZ Bank"
                     ),
                     TransactionEntity(
                         id = "sample_tx_2",
@@ -140,7 +251,9 @@ abstract class AppDatabase : RoomDatabase() {
                         nextDueDate = now + (oneDay * 25),
                         autoApply = true,
                         syncStatus = "SYNCED",
-                        isDirty = false
+                        isDirty = false,
+                        walletId = "wallet_kbzpay",
+                        walletName = "KBZPay"
                     ),
                     TransactionEntity(
                         id = "sample_tx_3",
@@ -155,7 +268,9 @@ abstract class AppDatabase : RoomDatabase() {
                         note = "Marketplace groceries and ingredients",
                         isRecurring = false,
                         syncStatus = "SYNCED",
-                        isDirty = false
+                        isDirty = false,
+                        walletId = "wallet_cash",
+                        walletName = "Cash (လက်ငင်းငွေ)"
                     ),
                     TransactionEntity(
                         id = "sample_tx_4",
@@ -170,7 +285,9 @@ abstract class AppDatabase : RoomDatabase() {
                         note = "Client milestone payout",
                         isRecurring = false,
                         syncStatus = "PENDING",
-                        isDirty = true
+                        isDirty = true,
+                        walletId = "wallet_cbpay",
+                        walletName = "CB Pay"
                     ),
                     TransactionEntity(
                         id = "sample_tx_5",
@@ -188,7 +305,9 @@ abstract class AppDatabase : RoomDatabase() {
                         nextDueDate = now + (oneDay * 29),
                         autoApply = true,
                         syncStatus = "PENDING",
-                        isDirty = true
+                        isDirty = true,
+                        walletId = "wallet_ayapay",
+                        walletName = "AYA Pay"
                     ),
                     TransactionEntity(
                         id = "sample_tx_6",
@@ -203,7 +322,9 @@ abstract class AppDatabase : RoomDatabase() {
                         note = "Weekly commute gas fill",
                         isRecurring = false,
                         syncStatus = "PENDING",
-                        isDirty = true
+                        isDirty = true,
+                        walletId = "wallet_cash",
+                        walletName = "Cash (လက်ငင်းငွေ)"
                     )
                 )
                 database.transactionDao().insertTransactions(sampleTxs)

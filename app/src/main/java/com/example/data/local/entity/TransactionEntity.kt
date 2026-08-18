@@ -22,5 +22,9 @@ data class TransactionEntity(
     val autoApply: Boolean = false,
     val syncStatus: String = "PENDING", // "SYNCED", "PENDING", "FAILED"
     val isDirty: Boolean = true,
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
+    val walletId: String? = null,
+    val walletName: String? = null,
+    val toWalletId: String? = null, // for TRANSFER type
+    val toWalletName: String? = null
 )
