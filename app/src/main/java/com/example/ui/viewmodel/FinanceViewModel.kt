@@ -107,6 +107,14 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
         initialValue = emptyList()
     )
 
+    val currentMonthCategoryBreakdown: StateFlow<List<CategoryExpenseBreakdown>> = allTransactions.map { txs ->
+        FinancialCalculations.calculateCategoryBreakdown(txs, System.currentTimeMillis())
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     val cashflowPoints: StateFlow<List<CashflowDataPoint>> = allTransactions.map { txs ->
         FinancialCalculations.generateCashflowSeries(txs, 7)
     }.stateIn(
